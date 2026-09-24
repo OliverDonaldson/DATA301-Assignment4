@@ -1,0 +1,28 @@
+# Quarto / knitr intermediates
+/.quarto/
+*_files/
+*_cache/
+
+# R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# LaTeX intermediates
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# macOS
+.DS_Store
+
+# spurious device file quarto leaves behind
+Rplots.pdf
+
+# outputs of the exploratory scripts
+working/*.png
+working/*.rds
