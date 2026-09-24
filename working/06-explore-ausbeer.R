@@ -15,12 +15,7 @@ d$decade <- paste0(d$year %/% 10 * 10, "s")
 p(autoplot(aggregate(full, FUN=sum)) +
     labs(title="Annual totals (complete years 1956-2009)", subtitle="Peak 1981; the seasonal swing is removed by aggregation",
          x="Year", y="Megalitres"), "e2_annual.png", 8, 3.8)
-# is the swing proportional to the level? the naive log-log CI assumes independent years,
-# so check the residual autocorrelation and the slope once a drift in time is allowed
-fit <- lm(log(amp) ~ log(level), d)
-print(confint(fit)); print(acf(resid(fit), plot=FALSE)$acf[2])
-print(Box.test(resid(fit), lag=5, type="Ljung-Box"))
-print(confint(lm(log(amp) ~ log(level) + year, d)))
+# does the swing grow with the level? (a plot only: Exercise 2 fits no model)
 p(ggplot(d, aes(level, amp, colour=decade)) + geom_point(size=1.8) +
     labs(title="Seasonal amplitude (Q4 - Q2) against annual level",
          subtitle="Rises with the level to the 1980s; the 2000s drop at almost the 1990s level",

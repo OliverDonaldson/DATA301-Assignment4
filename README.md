@@ -47,7 +47,7 @@ submission then states, kept so the reasoning is auditable.
 | `03-verify-counting-sort.R` | Proof the fast version is exact: counting sort, row sort and `stats::quantile(type = 8)` agree to machine precision on identical resamples. |
 | `04-diagnose-n5-failure.R` | Why the bias correction breaks at n = 5: anatomy of the bootstrap mean, share of MSE from the worst replication, and MSE drift as R grows. |
 | `05-full-simulation.R` | The full grid as a standalone run: `Rscript 05-full-simulation.R 50000`. |
-| `06-explore-ausbeer.R` | Exercise 2 exploration: the plots, the swing-vs-level check (with its residual autocorrelation) and the swing on several Box–Cox scales. |
+| `06-explore-ausbeer.R` | Exercise 2 exploration: the plots, the swing against the level and the swing on several Box–Cox scales. |
 
 Scripts 05 and 06 write their outputs (`res_*.rds`, `e2_*.png`) next to themselves; these are
 git-ignored.
