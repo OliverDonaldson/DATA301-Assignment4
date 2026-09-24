@@ -11,12 +11,12 @@ lam_iqr_fast <- function(xs) {          # xs already sorted
 }
 
 boot_apply_quantile <- function(x, B) {
-  n <- length(x); m <- matrix(sample(x, n*B, TRUE), nrow = B)
+  n <- length(x); m <- matrix(sample(x, n*B, TRUE), nrow = B, byrow = TRUE)
   q <- t(apply(m, 1, quantile, probs = c(.25,.75), type = 8, names = FALSE))
   log(3)/(q[,2]-q[,1])
 }
 boot_sort_direct <- function(x, B) {
-  n <- length(x); m <- matrix(sample(x, n*B, TRUE), nrow = B)
+  n <- length(x); m <- matrix(sample(x, n*B, TRUE), nrow = B, byrow = TRUE)
   ms <- t(apply(m, 1, sort))
   a <- q8_idx(n,.25); b <- q8_idx(n,.75)
   lo <- ms[,a$j] + a$g*(ms[,a$j+1]-ms[,a$j])
@@ -38,7 +38,7 @@ boot_counting <- function(x, B) {
   log(3)/(hi-lo)
 }
 for (n in c(5,30,100)) {
-  x <- rexp(n,1); B <- 200
+  x <- sort(rexp(n,1)); B <- 200   # sorted and filled by row, so all three draw the same resamples
   set.seed(9); t1 <- system.time(for(i in 1:30) boot_apply_quantile(x,B))[["elapsed"]]/30
   set.seed(9); t2 <- system.time(for(i in 1:30) boot_sort_direct(x,B))[["elapsed"]]/30
   set.seed(9); t3 <- system.time(for(i in 1:30) boot_counting(x,B))[["elapsed"]]/30

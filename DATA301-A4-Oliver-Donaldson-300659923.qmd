@@ -1,7 +1,8 @@
 ---
 title: "DATA 301 Assignment IV"
 author: "Oliver Donaldson, 300659923"
-date: "22 September 2026"
+date: "24 September 2026"
+date-format: "D MMMM YYYY"
 format:
   pdf:
     pdf-engine: xelatex
@@ -139,8 +140,8 @@ his ten-point sample the nine sample IQRs range from `r sprintf("%.2f", min(wiqr
 **Which type I would use: type 8.** Of Hyndman & Fan's (1996) six desirable properties, only type 5
 has all six, but they call it a compromise that no estimation argument justifies. Types 6--9 have
 five each, and of these they recommend type 8 because it is approximately median-unbiased whatever
-the underlying distribution, which suits an estimator whose purpose is not to rely on the
-exponential model. The type also matters for this
+the underlying distribution, so the quartiles add no reliance on the exponential model beyond
+the constant $\ln 3$. The type also matters for this
 estimator, which is the reciprocal of an IQR and so is driven by samples with a small IQR. At
 $n = 5$, type 7 gives $\text{IQR} = X_{(4)} - X_{(2)}$, the sum of two independent exponential
 spacings. Its density rises only linearly from zero, so $\mathbb{E}[\text{IQR}^{-2}] = \infty$ and
@@ -246,7 +247,9 @@ kable(data.frame(
   `r paste(big(sapply(lams, function(l) stat("BC", l, 5) / l^2)), collapse = "; ")` at the three
   values of $\lambda$, one sample supplies `r pc(min(top_bc))`--`r pc(max(top_bc))`% of each
   total, and `r pc(mean(sapply(lams, function(l) cell(l, 5)$p_neg)))`% of the estimates are
-  negative.
+  negative. Strictly, the same argument applies at $n = 30$ and $n = 100$, but there the resamples
+  responsible, which put both quartiles between two adjacent sample values, have probability below
+  $10^{-12}$ and never occur in practice.
 
 **Conclusion.** $\widehat\lambda_{\mathrm{ML}}$ is the best of the three throughout. The bootstrap
 correction does not improve $\widehat\lambda_{\mathrm{IQR}}$ in MSE at any sample size, and at
@@ -281,7 +284,7 @@ odd <- data.frame(t  = c(1980.75, 1981, 1988.75, 1990.75), y  = c(526, 548, 598,
                   lab = c("1980 Q4", "1981 Q1", "1988 Q4", "1990 Q4"))
 autoplot(ausbeer) +
   geom_segment(data = odd, aes(lx, ly, xend = t, yend = y), colour = "grey45", linewidth = .3) +
-  geom_point(data = odd, aes(t, y), colour = "red", size = 1.6) +
+  geom_point(data = odd, aes(t, y), shape = 21, fill = "white", size = 1.8, stroke = .6) +
   geom_text(data = odd, aes(lx, ly, label = lab), size = 2.8, vjust = c(1.2, 1.2, -.3, -.3)) +
   labs(x = "Year", y = "Megalitres")
 ```
@@ -290,7 +293,7 @@ autoplot(ausbeer) +
 runs from 1956 Q1 to 2010 Q2 (`r length(ausbeer)` observations). In @fig-time the pattern repeats
 every four observations, with one peak and one trough a year, which is the annual cycle of
 quarterly data. The data show the same period in their autocorrelation function (@fig-acf), the
-plot Hyndman & Athanasopoulos (2018, §2.8) use for this series: the correlation peaks at lags 4, 8
+plot Hyndman & Athanasopoulos (2018, §2.8) draw for this series from 1992: the correlation peaks at lags 4, 8
 and 12 (`r paste(sprintf("%.2f", ac[c(4, 8, 12)]), collapse = ", ")`), so each quarter is most like
 the same quarter a year earlier, and dips at lags 2, 6 and 10, because the Q2 trough lies two
 quarters from the Q4 peak.
@@ -312,13 +315,13 @@ fixed period, so they look like cyclic rather than seasonal behaviour (Hyndman &
 2018, §2.3). The trend also shows in @fig-acf: every autocorrelation is positive and they decay only
 slowly, which is how a trend appears in an ACF (Hyndman & Athanasopoulos, 2018, §2.8).
 
-**3. Seasonality.** Yes, strong seasonality. Q4 (October--December, summer and Christmas) is the
+**3. Seasonality.** Yes, strong seasonality. Q4 (October--December, late spring into summer, with Christmas) is the
 peak and Q2 (April--June, autumn into winter) the trough. The quarter means are Q4 `r qm[4]`,
 Q1 `r qm[1]`, Q3 `r qm[3]` and Q2 `r qm[2]` ML, so Q4 is about `r pc(qm[4] / qm[2] - 1)`% above Q2,
-and the order Q4 > Q1 > Q3 > Q2 holds in `r ord` of the `r nrow(m)` complete years.
+and the order Q4\ >\ Q1\ >\ Q3\ >\ Q2 holds in `r ord` of the `r nrow(m)` complete years.
 
 **4. Is the variability constant?** No. In @fig-time the seasonal swing widens as the level rises:
-Q4 $-$ Q2 averages about `r round(swing[["195"]])` ML in the late 1950s and
+Q4\ $-$\ Q2 averages about `r round(swing[["195"]])` ML in the late 1950s and
 `r round(swing[["198"]])` ML in the 1980s and 1990s. It then narrows to `r round(swing[["200"]])` ML
 in the 2000s while the level falls only `r pc(1 - level[["200"]] / level[["199"]])`%, so the swing is
 only partly proportional to the level. A transformation such as a log or Box--Cox transformation
@@ -337,8 +340,8 @@ it is not worth doing.
   `r v(1988, 4) - v(1987, 4)` and `r v(1990, 4) - v(1989, 4)` ML above the previous Q4, although
   annual production in those years (`r cm(ann[yr == 1988])` and `r cm(ann[yr == 1990])` ML) was
   below its 1981 peak.
-- The step up in 1973--74, when annual production rose by `r inc[["1973"]]` ML and then
-  `r inc[["1974"]]` ML, compared with
+- The step up in 1973--74 is unusual: annual production rose by `r inc[["1973"]]` ML and then
+  `r inc[["1974"]]` ML, against
   `r min(inc[c("1970", "1971", "1972")])`--`r max(inc[c("1970", "1971", "1972")])` ML a year in
   1970--72.
 - The last two observations (2010 Q1--Q2) are an incomplete year: the apparent drop at the end of
